@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 390" role="img" aria-label="Sala Ísis — Estética e Bem-Estar">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- ===== LOTUS ICON ===== -->
+
+  <!-- Center petal (tall leaf / teardrop) -->
+  <path d="M 150,12
+           C 132,34 123,62 123,84
+           C 123,100 135,112 150,116
+           C 165,112 177,100 177,84
+           C 177,62 168,34 150,12 Z"
+        fill="none" stroke="#D4A574" stroke-width="2.6" stroke-linejoin="round"/>
+
+  <!-- Circle with R -->
+  <circle cx="150" cy="74" r="21" fill="none" stroke="#D4A574" stroke-width="2.2"/>
+  <text x="150" y="83"
+        text-anchor="middle"
+        font-family="Cormorant Garamond, Georgia, serif"
+        font-size="26" font-weight="400"
+        fill="#D4A574">R</text>
+
+  <!-- Left inner petal -->
+  <path d="M 148,114
+           C 122,97 96,74 82,50
+           C 98,68 122,90 148,114 Z"
+        fill="none" stroke="#D4A574" stroke-width="2.6" stroke-linejoin="round"/>
+
+  <!-- Right inner petal -->
+  <path d="M 152,114
+           C 178,97 204,74 218,50
+           C 202,68 178,90 152,114 Z"
+        fill="none" stroke="#D4A574" stroke-width="2.6" stroke-linejoin="round"/>
+
+  <!-- Left outer petal -->
+  <path d="M 114,94
+           C 93,82 70,70 52,50
+           C 68,66 92,80 114,94 Z"
+        fill="none" stroke="#D4A574" stroke-width="2.2" stroke-linejoin="round"/>
+
+  <!-- Right outer petal -->
+  <path d="M 186,94
+           C 207,82 230,70 248,50
+           C 232,66 208,80 186,94 Z"
+        fill="none" stroke="#D4A574" stroke-width="2.2" stroke-linejoin="round"/>
+
+  <!-- Lotus base bowl -->
+  <path d="M 96,116 C 108,138 130,146 150,146 C 170,146 192,138 204,116"
+        fill="none" stroke="#D4A574" stroke-width="2.6" stroke-linecap="round"/>
+
+  <!-- ===== TEXT ===== -->
+
+  <!-- SALA -->
+  <text x="150" y="186"
+        text-anchor="middle"
+        font-family="Cormorant Garamond, Georgia, serif"
+        font-size="22" font-weight="500" letter-spacing="10"
+        fill="#D4A574">SALA</text>
+
+  <!-- ÍSIS -->
+  <text x="150" y="272"
+        text-anchor="middle"
+        font-family="Cormorant Garamond, Georgia, serif"
+        font-size="88" font-weight="400" letter-spacing="4"
+        fill="#D4A574">ÍSIS</text>
+
+  <!-- Estética e Bem-Estar -->
+  <text x="150" y="306"
+        text-anchor="middle"
+        font-family="Cormorant Garamond, Georgia, serif"
+        font-size="17.5" font-weight="400" letter-spacing="1.5"
+        fill="#D4A574">Estética e Bem-Estar</text>
+
+  <!-- Decorative line -->
+  <line x1="92" y1="323" x2="208" y2="323"
+        stroke="#D4A574" stroke-width="1" opacity="0.7"/>
+</svg>
