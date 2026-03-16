@@ -341,9 +341,12 @@ def health():
     return jsonify({"ok": True, "service": "Isys Chat"})
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 @app.route("/isys", methods=["POST"])
 def isys_chat():
+    if request.method == "GET":
+        return jsonify({"ok": True, "service": "Isys Chat"})
+
     if not ANTHROPIC_API_KEY:
         return jsonify({"erro": "ANTHROPIC_API_KEY não configurada."}), 500
 
