@@ -15,7 +15,7 @@ MAX_HISTORY_ITEMS     = 30
 MAX_HISTORY_TEXT_CHARS = 12000
 
 app = Flask(__name__)
-CORS(app, origins=CORS_ORIGIN)
+CORS(app, origins=CORS_ORIGIN, supports_credentials=False)
 
 # ── Textos fixos ──────────────────────────────────────────────────────────────
 NON_LEGAL_RESPONSE = (
@@ -327,6 +327,7 @@ def health():
     return jsonify({"ok": True, "service": "Isys Chat"})
 
 
+@app.route("/", methods=["POST"])
 @app.route("/isys", methods=["POST"])
 def isys_chat():
     if not ANTHROPIC_API_KEY:
