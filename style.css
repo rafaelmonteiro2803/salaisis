@@ -1307,6 +1307,14 @@ p { color: var(--text-mid); }
   margin-bottom: 36px;
 }
 
+.cta-lotus {
+  width: 280px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  opacity: 0.85;
+}
+
 .cta-title {
   font-size: clamp(2.4rem, 5vw, 4rem);
   color: var(--white);
