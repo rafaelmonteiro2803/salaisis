@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify
 
 # ── Configuração ──────────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
-ANTHROPIC_MODEL   = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5").strip()
+ANTHROPIC_MODEL   = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001").strip()
 
 MAX_PERGUNTA_CHARS     = 3000
 MAX_HISTORY_ITEMS      = 30
@@ -381,12 +381,15 @@ def isys_chat():
         return jsonify({"ok": True, "agente": "Isys", "resposta": resposta})
 
     except anthropic.AuthenticationError:
-        return jsonify({"erro": "ANTHROPIC_API_KEY inválida."}), 500
+        return jsonify({"ok": False, "resposta": "Desculpe, estou temporariamente indisponível. Por favor, entre em contato pelo WhatsApp: (11) 98488-3383"}), 200
+    except anthropic.BadRequestError as e:
+        traceback.print_exc()
+        return jsonify({"ok": False, "resposta": "Desculpe, estou temporariamente indisponível. Por favor, entre em contato pelo WhatsApp: (11) 98488-3383"}), 200
     except anthropic.RateLimitError:
-        return jsonify({"erro": "Limite de requisições atingido. Tente novamente em instantes."}), 429
+        return jsonify({"ok": False, "resposta": "Muitas mensagens em pouco tempo. Aguarde um instante e tente novamente."}), 200
     except Exception as e:
         traceback.print_exc()
-        return jsonify({"erro": "Falha ao processar a solicitação.", "detalhe": str(e)}), 500
+        return jsonify({"ok": False, "resposta": "Desculpe, estou temporariamente indisponível. Por favor, entre em contato pelo WhatsApp: (11) 98488-3383"}), 200
 
 
 if __name__ == "__main__":
