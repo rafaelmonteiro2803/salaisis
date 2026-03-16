@@ -336,33 +336,28 @@ p { color: var(--text-mid); }
 }
 
 .nav-logo-img {
-  width: 52px;
   height: 52px;
+  width: auto;
   object-fit: contain;
   transition: var(--transition);
-  /* Logo já é dourado-rosé — na navbar escura, clarear levemente */
-  filter: brightness(1);
-}
-
-.navbar:not(.scrolled) .nav-logo-img {
-  filter: brightness(1.25);
 }
 
 .hero-logo-img {
-  width: 220px;
+  width: 240px;
   height: auto;
-  /* Sobre fundo escuro: clarear a logo SVG */
-  filter: brightness(1.35) drop-shadow(0 2px 20px rgba(212,165,116,0.3));
   margin: 0 auto;
   display: block;
+  /* Logo tem fundo claro — mix-blend-mode integra ao hero escuro */
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 4px 24px rgba(212,165,116,0.25));
 }
 
 .footer-logo-img {
-  width: 64px;
-  height: 64px;
+  width: 110px;
+  height: auto;
   object-fit: contain;
-  filter: brightness(1.1) opacity(0.85);
   margin-bottom: 8px;
+  mix-blend-mode: screen;
 }
 
 .nav-links {
@@ -1363,13 +1358,6 @@ p { color: var(--text-mid); }
   margin-bottom: 8px;
 }
 
-.footer-brand-name {
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
-  color: rgba(255,255,255,0.85);
-}
-
-.footer-brand-name em { color: var(--gold-rose); font-style: italic; }
 
 .footer-brand p {
   color: rgba(255,255,255,0.5);
