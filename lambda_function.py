@@ -4,11 +4,11 @@ import re
 import urllib.request
 import urllib.error
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5").strip()
 CORS_ORIGIN = os.getenv("CORS_ORIGIN", "*").strip()
 
-OPENAI_URL = "https://api.openai.com/v1/responses"
+ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 MAX_PERGUNTA_CHARS = 3000
 MAX_HISTORY_ITEMS = 30
 MAX_HISTORY_TEXT_CHARS = 12000
@@ -432,62 +432,48 @@ def ensure_disclaimer_and_cta(text: str) -> str:
     return final_text.strip()
 
 
-def extract_output_text(parsed: dict) -> str:
-    if parsed.get("output_text"):
-        return parsed["output_text"].strip()
-
-    texts = []
-    for item in parsed.get("output", []):
-        for content in item.get("content", []):
-            ctype = content.get("type")
-            if ctype in ("output_text", "text"):
-                txt = content.get("text", "")
-                if txt:
-                    texts.append(txt)
-
-    return "\n".join(texts).strip()
+def extract_claude_text(parsed: dict) -> str:
+    for block in parsed.get("content", []):
+        if block.get("type") == "text":
+            return block.get("text", "").strip()
+    return ""
 
 
-def build_conversation_transcript(history, user_question: str) -> str:
+def build_messages(history, user_question: str) -> list:
     cleaned = sanitize_history(history)
-    lines = []
+    messages = []
 
     for msg in cleaned:
-        prefix = "Usuário" if msg["role"] == "user" else "Isys"
-        lines.append(f"{prefix}: {msg['text']}")
+        messages.append({"role": msg["role"], "content": msg["text"]})
 
     if not cleaned or cleaned[-1]["role"] != "user" or cleaned[-1]["text"].strip() != user_question.strip():
-        lines.append(f"Usuário: {user_question.strip()}")
+        messages.append({"role": "user", "content": user_question.strip()})
 
-    transcript = "\n".join(lines).strip()
+    # Trim oldest messages if history exceeds limit
+    total_chars = sum(len(m["content"]) for m in messages)
+    while total_chars > MAX_HISTORY_TEXT_CHARS and len(messages) > 1:
+        removed = messages.pop(0)
+        total_chars -= len(removed["content"])
 
-    if len(transcript) > MAX_HISTORY_TEXT_CHARS:
-        transcript = transcript[-MAX_HISTORY_TEXT_CHARS:]
-
-    return (
-        "Considere o histórico da conversa abaixo antes de responder.\n"
-        "Responda levando em conta o contexto anterior e focando na última mensagem do usuário.\n\n"
-        f"{transcript}\n\n"
-        "Agora responda à última mensagem do usuário."
-    )
+    return messages
 
 
-def call_openai(user_question: str, history=None) -> str:
+def call_claude(user_question: str, history=None) -> str:
     payload = {
-        "model": OPENAI_MODEL,
-        "instructions": SYSTEM_PROMPT,
-        "input": build_conversation_transcript(history or [], user_question),
-        "max_output_tokens": 700,
-        "store": False
+        "model": ANTHROPIC_MODEL,
+        "system": SYSTEM_PROMPT.strip(),
+        "messages": build_messages(history or [], user_question),
+        "max_tokens": 700
     }
 
     req = urllib.request.Request(
-        OPENAI_URL,
+        ANTHROPIC_URL,
         data=json.dumps(payload).encode("utf-8"),
         method="POST",
         headers={
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
-            "Content-Type": "application/json"
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
         }
     )
 
@@ -495,18 +481,18 @@ def call_openai(user_question: str, history=None) -> str:
         with urllib.request.urlopen(req, timeout=90) as response:
             raw = response.read().decode("utf-8")
             parsed = json.loads(raw)
-            text = extract_output_text(parsed)
+            text = extract_claude_text(parsed)
             return ensure_disclaimer_and_cta(text)
 
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(f"Erro HTTP OpenAI {e.code}: {detail}")
+        raise RuntimeError(f"Erro HTTP Claude {e.code}: {detail}")
 
     except urllib.error.URLError as e:
-        raise RuntimeError(f"Falha de rede ao consultar OpenAI: {str(e)}")
+        raise RuntimeError(f"Falha de rede ao consultar Claude: {str(e)}")
 
     except Exception as e:
-        raise RuntimeError(f"Falha ao consultar OpenAI: {str(e)}")
+        raise RuntimeError(f"Falha ao consultar Claude: {str(e)}")
 
 
 def parse_body(event):
@@ -544,8 +530,8 @@ def lambda_handler(event, context):
         if method != "POST":
             return build_response(405, {"erro": "Método não permitido."})
 
-        if not OPENAI_API_KEY:
-            return build_response(500, {"erro": "OPENAI_API_KEY não configurada no Lambda."})
+        if not ANTHROPIC_API_KEY:
+            return build_response(500, {"erro": "ANTHROPIC_API_KEY não configurada no Lambda."})
 
         body = parse_body(event)
         pergunta = (body.get("pergunta") or body.get("message") or "").strip()
@@ -576,7 +562,7 @@ def lambda_handler(event, context):
                 "resposta": NON_LEGAL_RESPONSE
             })
 
-        resposta = call_openai(pergunta, historico)
+        resposta = call_claude(pergunta, historico)
 
         if is_effectively_non_legal_response(resposta):
             resposta = (
