@@ -260,6 +260,88 @@
     el.textContent = new Date().getFullYear();
   });
 
+  /* ---- ISYS CHAT ---- */
+  var ISYS_ENDPOINT = window.ISYS_ENDPOINT || '';
+
+  var isysForm     = document.getElementById('isysForm');
+  var isysInput    = document.getElementById('isysInput');
+  var isysMessages = document.getElementById('isysMessages');
+  var isysSend     = document.getElementById('isysSend');
+  var isysStatus   = document.getElementById('isysStatus');
+  var isysHistorico = [];
+
+  function isysAppendMessage(role, text) {
+    var div    = document.createElement('div');
+    div.className = 'isys-message ' + role;
+    var bubble = document.createElement('div');
+    bubble.className = 'isys-bubble';
+    var p = document.createElement('p');
+    // preserve line breaks from Claude response
+    p.style.whiteSpace = 'pre-wrap';
+    p.textContent = text;
+    bubble.appendChild(p);
+    div.appendChild(bubble);
+    isysMessages.appendChild(div);
+    isysMessages.scrollTop = isysMessages.scrollHeight;
+  }
+
+  function isysSetLoading(loading) {
+    isysSend.disabled  = loading;
+    isysInput.disabled = loading;
+    isysStatus.textContent = loading ? 'Isys está digitando...' : '';
+  }
+
+  if (isysForm && ISYS_ENDPOINT) {
+    // Auto-resize textarea
+    isysInput.addEventListener('input', function () {
+      isysInput.style.height = 'auto';
+      isysInput.style.height = Math.min(isysInput.scrollHeight, 120) + 'px';
+    });
+
+    // Send on Enter (Shift+Enter for newline)
+    isysInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        isysForm.dispatchEvent(new Event('submit', { cancelable: true }));
+      }
+    });
+
+    isysForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var pergunta = isysInput.value.trim();
+      if (!pergunta) return;
+
+      isysAppendMessage('user', pergunta);
+      isysInput.value = '';
+      isysInput.style.height = 'auto';
+      isysHistorico.push({ role: 'user', text: pergunta });
+
+      isysSetLoading(true);
+
+      fetch(ISYS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pergunta: pergunta, historico: isysHistorico })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.ok && data.resposta) {
+            isysAppendMessage('bot', data.resposta);
+            isysHistorico.push({ role: 'assistant', text: data.resposta });
+          } else {
+            isysAppendMessage('bot', 'Desculpe, não consegui processar sua mensagem. Tente novamente.');
+          }
+        })
+        .catch(function () {
+          isysAppendMessage('bot', 'Houve um problema de conexão. Por favor, tente novamente.');
+        })
+        .finally(function () {
+          isysSetLoading(false);
+        });
+    });
+  }
+
   /* ---- PAGE LOADED ---- */
   document.documentElement.classList.add('js-loaded');
 
