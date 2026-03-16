@@ -235,7 +235,7 @@
 
   /* ---- CARD TILT on mouse move (desktop only) ---- */
   if (window.matchMedia('(hover: hover) and (min-width: 768px)').matches) {
-    const tiltCards = document.querySelectorAll('.jornada-card, .depo-card');
+    const tiltCards = document.querySelectorAll('.jornada-card');
 
     tiltCards.forEach(function (card) {
       card.addEventListener('mousemove', function (e) {
@@ -341,6 +341,105 @@
         });
     });
   }
+
+  /* ---- DEPOIMENTOS CARROSSEL ---- */
+  (function () {
+    var slider  = document.getElementById('depoSlider');
+    var track   = document.getElementById('depoTrack');
+    var prevBtn = document.getElementById('depoPrev');
+    var nextBtn = document.getElementById('depoNext');
+    var dotsEl  = document.getElementById('depoDots');
+
+    if (!slider || !track) return;
+
+    var cards       = track.querySelectorAll('.depo-card');
+    var total       = cards.length;
+    var perView     = window.innerWidth >= 768 ? 3 : 1;
+    var current     = 0;
+    var autoTimer   = null;
+    var INTERVAL    = 5000;
+
+    function getPerView() {
+      return window.innerWidth >= 768 ? 3 : 1;
+    }
+
+    function maxIndex() {
+      return total - perView;
+    }
+
+    function goTo(index) {
+      perView = getPerView();
+      current = Math.max(0, Math.min(index, maxIndex()));
+      var cardWidth = cards[0].offsetWidth + 16; // width + margin*2
+      track.style.transform = 'translateX(-' + (current * cardWidth) + 'px)';
+      updateDots();
+    }
+
+    function buildDots() {
+      dotsEl.innerHTML = '';
+      var count = maxIndex() + 1;
+      for (var i = 0; i < count; i++) {
+        var btn = document.createElement('button');
+        btn.className = 'depo-dot' + (i === current ? ' active' : '');
+        btn.setAttribute('aria-label', 'Ir para depoimento ' + (i + 1));
+        (function (idx) {
+          btn.addEventListener('click', function () { goTo(idx); resetTimer(); });
+        })(i);
+        dotsEl.appendChild(btn);
+      }
+    }
+
+    function updateDots() {
+      var dots = dotsEl.querySelectorAll('.depo-dot');
+      dots.forEach(function (d, i) {
+        d.classList.toggle('active', i === current);
+      });
+    }
+
+    function next() { goTo(current >= maxIndex() ? 0 : current + 1); }
+    function prev() { goTo(current <= 0 ? maxIndex() : current - 1); }
+
+    function startTimer() {
+      autoTimer = setInterval(next, INTERVAL);
+    }
+
+    function resetTimer() {
+      clearInterval(autoTimer);
+      startTimer();
+    }
+
+    // Init
+    perView = getPerView();
+    buildDots();
+    goTo(0);
+    startTimer();
+
+    prevBtn.addEventListener('click', function () { prev(); resetTimer(); });
+    nextBtn.addEventListener('click', function () { next(); resetTimer(); });
+
+    // Pause on hover
+    slider.addEventListener('mouseenter', function () { clearInterval(autoTimer); });
+    slider.addEventListener('mouseleave', startTimer);
+
+    // Touch swipe
+    var touchStartX = 0;
+    slider.addEventListener('touchstart', function (e) {
+      touchStartX = e.changedTouches[0].clientX;
+      clearInterval(autoTimer);
+    }, { passive: true });
+    slider.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); }
+      resetTimer();
+    }, { passive: true });
+
+    // Rebuild on resize
+    window.addEventListener('resize', function () {
+      perView = getPerView();
+      buildDots();
+      goTo(Math.min(current, maxIndex()));
+    }, { passive: true });
+  }());
 
   /* ---- PAGE LOADED ---- */
   document.documentElement.classList.add('js-loaded');
