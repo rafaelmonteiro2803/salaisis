@@ -1182,10 +1182,16 @@ p { color: var(--text-mid); }
 }
 
 /* ---------- DEPOIMENTOS ---------- */
-.depo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+.depo-slider {
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.depo-track {
+  display: flex;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .depo-card {
@@ -1193,13 +1199,80 @@ p { color: var(--text-mid); }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 36px 32px;
-  transition: var(--transition);
+  transition: box-shadow var(--transition), border-color var(--transition);
+  flex: 0 0 calc(33.333% - 16px);
+  min-width: calc(33.333% - 16px);
+  margin: 0 8px;
+  box-sizing: border-box;
 }
 
 .depo-card:hover {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
   border-color: var(--border-mid);
+}
+
+/* Setas do carrossel */
+.depo-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1px solid var(--border-mid);
+  color: var(--gold-rose);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  z-index: 2;
+}
+
+.depo-arrow:hover {
+  background: var(--gold-rose);
+  color: var(--white);
+  border-color: var(--gold-rose);
+  box-shadow: var(--shadow-md);
+}
+
+.depo-prev { left: -22px; }
+.depo-next { right: -22px; }
+
+/* Dots */
+.depo-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.depo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--beige-mid);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition);
+}
+
+.depo-dot.active {
+  background: var(--gold-rose);
+  width: 24px;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .depo-card {
+    flex: 0 0 calc(100% - 16px);
+    min-width: calc(100% - 16px);
+  }
+  .depo-prev { left: 0; }
+  .depo-next { right: 0; }
 }
 
 .depo-stars {
@@ -1596,9 +1669,7 @@ p { color: var(--text-mid); }
 
   .jornada-grid { grid-template-columns: 1fr; }
 
-  .depo-grid {
-    grid-template-columns: 1fr;
-  }
+  .depo-slider { padding: 0 8px; }
 
   .ambiente-grid {
     grid-template-columns: 1fr;
