@@ -161,26 +161,27 @@
   window.addEventListener('scroll', setActiveNavLink, { passive: true });
 
   /* ---- WHATSAPP FLOAT: hide/show based on scroll position ---- */
-  const waFloat = document.querySelector('.whatsapp-float');
+  const waFloat    = document.querySelector('.whatsapp-float');
+  const isysFloat  = document.querySelector('.isys-float');
 
-  function toggleWaFloat() {
-    if (window.scrollY > 400) {
-      waFloat.style.opacity = '1';
-      waFloat.style.pointerEvents = 'auto';
-      waFloat.style.transform = '';
-    } else {
-      waFloat.style.opacity = '0';
-      waFloat.style.pointerEvents = 'none';
-      waFloat.style.transform = 'translateY(20px)';
-    }
+  function toggleFloats() {
+    const show = window.scrollY > 400;
+    [waFloat, isysFloat].forEach(function (el) {
+      if (!el) return;
+      el.style.opacity       = show ? '1' : '0';
+      el.style.pointerEvents = show ? 'auto' : 'none';
+      el.style.transform     = show ? '' : 'translateY(20px)';
+    });
   }
 
-  // Initial state
   if (waFloat) {
     waFloat.style.transition = 'opacity 0.4s ease, transform 0.4s ease, box-shadow 0.35s ease';
-    toggleWaFloat();
-    window.addEventListener('scroll', toggleWaFloat, { passive: true });
   }
+  if (isysFloat) {
+    isysFloat.style.transition = 'opacity 0.4s ease, transform 0.4s ease, box-shadow 0.35s ease, border-color 0.35s ease';
+  }
+  toggleFloats();
+  window.addEventListener('scroll', toggleFloats, { passive: true });
 
   /* ---- HERO: subtle parallax on scroll ---- */
   const heroBg = document.querySelector('.hero-bg');
