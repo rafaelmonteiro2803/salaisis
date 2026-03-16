@@ -1,21 +1,35 @@
 import os
 import re
-import json
 import anthropic
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 
 # ── Configuração ──────────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
 ANTHROPIC_MODEL   = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5").strip()
-CORS_ORIGIN       = os.getenv("CORS_ORIGIN", "*").strip()
 
-MAX_PERGUNTA_CHARS    = 3000
-MAX_HISTORY_ITEMS     = 30
+MAX_PERGUNTA_CHARS     = 3000
+MAX_HISTORY_ITEMS      = 30
 MAX_HISTORY_TEXT_CHARS = 12000
 
 app = Flask(__name__)
-CORS(app, origins=CORS_ORIGIN, supports_credentials=False)
+
+# ── CORS manual — garante preflight em qualquer rota ─────────────────────────
+@app.after_request
+def add_cors(response):
+    response.headers["Access-Control-Allow-Origin"]  = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+    return response
+
+@app.before_request
+def handle_options():
+    if request.method == "OPTIONS":
+        from flask import make_response
+        res = make_response("", 200)
+        res.headers["Access-Control-Allow-Origin"]  = "*"
+        res.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        res.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+        return res
 
 # ── Textos fixos ──────────────────────────────────────────────────────────────
 NON_LEGAL_RESPONSE = (
