@@ -340,16 +340,21 @@ p { color: var(--text-mid); }
   width: auto;
   object-fit: contain;
   transition: var(--transition);
+  border-radius: 8px;
+  /* Fade das bordas do PNG para integrar ao navbar */
+  -webkit-mask-image: radial-gradient(ellipse 46% 46% at 50% 50%, black 50%, transparent 75%);
+  mask-image: radial-gradient(ellipse 46% 46% at 50% 50%, black 50%, transparent 75%);
 }
 
 .hero-logo-img {
   width: 240px;
   height: auto;
-  margin: 0 auto;
   display: block;
-  /* Logo tem fundo claro — mix-blend-mode integra ao hero escuro */
-  mix-blend-mode: screen;
-  filter: drop-shadow(0 4px 24px rgba(212,165,116,0.25));
+  position: relative;
+  z-index: 1;
+  /* Mask radial: fades borda do PNG para transparente */
+  -webkit-mask-image: radial-gradient(ellipse 48% 48% at 50% 50%, black 55%, transparent 78%);
+  mask-image: radial-gradient(ellipse 48% 48% at 50% 50%, black 55%, transparent 78%);
 }
 
 .footer-logo-img {
@@ -357,7 +362,8 @@ p { color: var(--text-mid); }
   height: auto;
   object-fit: contain;
   margin-bottom: 8px;
-  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse 46% 46% at 50% 50%, black 50%, transparent 75%);
+  mask-image: radial-gradient(ellipse 46% 46% at 50% 50%, black 50%, transparent 75%);
 }
 
 .nav-links {
@@ -509,6 +515,28 @@ p { color: var(--text-mid); }
 
 .hero-logo-wrap {
   margin-bottom: 48px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* Halo suave que repete a cor de fundo da logo e dissolve no hero */
+.hero-logo-wrap::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    rgba(242, 233, 226, 0.55) 0%,
+    rgba(242, 233, 226, 0.25) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .hero-logo-symbol {
