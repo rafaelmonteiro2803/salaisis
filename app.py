@@ -1,5 +1,6 @@
 import os
 import re
+import traceback
 import anthropic
 from flask import Flask, request, jsonify
 
@@ -384,6 +385,7 @@ def isys_chat():
     except anthropic.RateLimitError:
         return jsonify({"erro": "Limite de requisições atingido. Tente novamente em instantes."}), 429
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"erro": "Falha ao processar a solicitação.", "detalhe": str(e)}), 500
 
 
