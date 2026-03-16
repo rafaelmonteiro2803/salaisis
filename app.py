@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify
 
 # ── Configuração ──────────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
-ANTHROPIC_MODEL   = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5").strip()
+ANTHROPIC_MODEL   = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001").strip()
 
 MAX_PERGUNTA_CHARS     = 3000
 MAX_HISTORY_ITEMS      = 30
