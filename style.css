@@ -1638,6 +1638,17 @@ p { color: var(--text-mid); }
   .btn-lg { padding: 14px 28px; font-size: 0.86rem; }
 }
 
+/* ---------- ISYS CHAT ---------- */
+.isys-chat-avatar { overflow: hidden; }
+.isys-chat-avatar-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 50%;
+  display: block;
+}
+
 /* ---------- SCROLLBAR ---------- */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--sand); }
