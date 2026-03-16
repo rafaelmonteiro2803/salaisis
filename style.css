@@ -419,6 +419,9 @@ p { color: var(--text-mid); }
 .nav-toggle.open span:nth-child(2) { opacity: 0; }
 .nav-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
+.nav-isys { display: flex; align-items: center; }
+.isys-icon { height: 36px; width: auto; object-fit: contain; display: block; }
+
 /* ---------- HERO ---------- */
 .hero {
   position: relative;
