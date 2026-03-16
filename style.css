@@ -358,6 +358,7 @@ p { color: var(--text-mid); }
   object-fit: contain;
   margin-bottom: 8px;
   mix-blend-mode: screen;
+  border-radius: 12px;
 }
 
 .nav-links {
